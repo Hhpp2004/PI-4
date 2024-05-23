@@ -8,19 +8,23 @@ app.use(bodyParse.json());
 
 app.post("/salvar-percurso", (req,res) =>
 {
-    const {user_id,data_hora,local_id} = req.body;
-    const db = new sqlite3.Database('./carro.db');
+    
+    const {id,acao,inicio_ms,fim_ms} = req.body;
+    const db = new sqlite3.Database('./viagem.db');
+    const sql = `INSERT INTO viagem(id,acao,inicio_ms,fim_ms) VALUES (?,?,?)`;
 
-    db.run(`INSERT INTO Percursos (usuario_id, data_hora, local_id) VALUES (?,?,?)`,
-    [user_id,data_hora,local_id],function(err){
+    db.run(sql, [id,acao,inicio_ms,fim_ms], function(err){
         if(err)
-            {
-                console.log(err.message);
-            }
+        {
+            console.log(err.message);
+            res.status(500).send("Erro ao salvar o arquivo");
+        }
         else
-        console.log("Dados sendo salvo");
-            db.close();
-            res.send("Arquivo salvo com sucesso!");
+        {
+            console.log("Dados sendo salvo");
+        }
+        db.close();
+        res.send("Arquivo salvo com sucesso!");
     });
     db.close();
 }).listen(PORT,() =>
